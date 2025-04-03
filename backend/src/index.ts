@@ -7,6 +7,7 @@ import expres from "express";
 const PORT = process.env.PORT || 5000;
 
 app.use(expres.json());
+app.use(expres.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 

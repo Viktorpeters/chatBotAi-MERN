@@ -5,15 +5,21 @@ import User from "../models/User.js";
 // GET-REQUEST -->
 export const getAllUsers = async (req: Request, res: Response) => {
   // get all Users
+  const users = await User.find({}).select("-password");
 
-  
+  res.status(200).json({
+    sucess: true,
+    data: users,
+  });
 };
 
 // POST-REQUEST -->
 export const signUp = async (
   req: Request<{}, {}, signUpType>,
   res: Response
-) => {};
+) => {
+ 
+};
 
 // POST-REQUEST -->
 export const signIn = async (
