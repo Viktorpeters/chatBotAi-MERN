@@ -18,7 +18,41 @@ export const signUp = async (
   req: Request<{}, {}, signUpType>,
   res: Response
 ) => {
- 
+  // get the user information from the request
+
+  const { name, email, password } = req.body;
+  // check if the user already exists
+
+  try {
+    const existingUser = await User.findOne({ email: email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
+
+    const newUser = await User.create({ email: email, password: password });
+
+    if (newUser) {
+      return res.status(201).json({
+        success: true,
+        message: "User created successfully",
+        data: newUser,
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };
 
 // POST-REQUEST -->
