@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { signUpType, signInType } from "../schema/user-schema.js";
 import User from "../models/User.js";
+import { hash } from "bcrypt";
 
 // GET-REQUEST -->
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -33,7 +34,14 @@ export const signUp = async (
       });
     }
 
-    const newUser = await User.create({ email: email, password: password });
+    // hash the password
+
+    const hashedPassword = await hash(password, 10);
+
+    const newUser = await User.create({
+      email: email,
+      password: hashedPassword,
+    });
 
     if (newUser) {
       return res.status(201).json({
@@ -59,4 +67,18 @@ export const signUp = async (
 export const signIn = async (
   req: Request<{}, {}, signInType>,
   res: Response
-) => {};
+) => {
+  // get the user information from the request
+
+  const { email, password } = req.body;
+
+  // check if user exists
+
+  try {
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      // proceed to confirm if the password matches with the one stored.
+    }
+  } catch (error) {}
+};
