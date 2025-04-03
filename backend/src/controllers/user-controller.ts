@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { signUpType, signInType } from "../schema/user-schema.js";
 import User from "../models/User.js";
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
+import { generateToken } from "../utils/token-manager.js";
 
 // GET-REQUEST -->
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -72,13 +73,50 @@ export const signIn = async (
 
   const { email, password } = req.body;
 
-  // check if user exists
-
   try {
+    // check if user exists
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       // proceed to confirm if the password matches with the one stored.
+
+      const isValid = await compare(password, existingUser.password);
+
+      if (isValid) {
+        // generate a token
+
+        const accessToken = generateToken("ACCESS", {
+          userId: existingUser._id,
+        });
+
+        const refreshToken = generateToken("REFRESH", {
+          userId: existingUser._id,
+        });
+
+        return res.status(200).json({
+          success: true,
+          message: "logged in succesfully",
+          token: {
+            accessToken,
+            refreshToken,
+          },
+        });
+      }
+
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
-  } catch (error) {}
+
+    res.status(400).json({
+      suceess: false,
+      message: "validation error",
+    });
+  } catch (error) {
+    res.status(500).json({
+      sucess: false,
+      message: "internal server error",
+    });
+  }
 };
