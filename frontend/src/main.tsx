@@ -3,21 +3,37 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
+import "./index.css";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
 const theme = createTheme({
   typography: {
     fontFamily: "Roboto Slab,serif",
-    allVariants: { color: "white" },
+  },
+  palette: {
+    mode: "light",
+    primary: {
+      main: "#1976d2",
+    },
+    background: {
+      default: "#f5f5f5",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#000000",
+      secondary: "#666666",
+    },
   },
 });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </BrowserRouter>
-    <App />
+    <AuthProvider>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>
 );
