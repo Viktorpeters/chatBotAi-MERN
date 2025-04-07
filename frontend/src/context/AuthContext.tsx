@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 type User = {
   name: string;
@@ -14,33 +8,35 @@ type User = {
 type userAuth = {
   isLoggedIn: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+  token: string
 };
 
-const AuthContext = createContext<userAuth>();
+const AuthContext = createContext<userAuth | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [token, setToken] = useState("");
 
-  useEffect(() => {}, []);
-
-  const login = async () => {};
-
-  const signup = async () => {};
-
-  const logout = async () => {};
-
-  const value = {
-    user,
-    isLoggedIn,
-    login,
-    logout,
-    signup,
-  };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn,
+        setUser: setUser,
+        setIsLoggedIn: setIsLoggedIn,
+        setToken: setToken,
+        token: token
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = (): userAuth | undefined => {
+  return useContext(AuthContext);
+};

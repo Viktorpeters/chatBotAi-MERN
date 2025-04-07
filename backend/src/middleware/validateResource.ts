@@ -23,3 +23,4 @@ const validateResource =
   };
 
 export default validateResource;
+

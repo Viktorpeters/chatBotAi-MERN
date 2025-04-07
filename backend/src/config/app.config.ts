@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const appConfig = () => ({
   OPEN_AI_SECRET: getEnv("OPEN_AI_SECRET"),
   MONGODB_URL: getEnv("MONGODB_URL"),
@@ -5,6 +9,7 @@ const appConfig = () => ({
   PORT: getEnv("PORT"),
   ACCESS_EXPIRY_TIME: getEnv("ACCESS_EXPIRY_TIME"),
   REFRESH_EXPIRY_TIME: getEnv("REFRESH_EXPIRY_TIME"),
+  COOKIE_EXP_TIME: getEnv("COOKIE_EXP_TIME"),
 });
 
 const getEnv = (key: string, defaultValue: string = ""): string => {

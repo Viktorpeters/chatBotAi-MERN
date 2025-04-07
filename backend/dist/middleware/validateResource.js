@@ -10,7 +10,10 @@ const validateResource = (schema) => (req, res, next) => {
     catch (error) {
         res
             .status(400)
-            .json({ message: "An error occurred while parsing", error: error });
+            .json({
+            message: "An error occurred while parsing",
+            error: error.errors,
+        });
     }
 };
 export default validateResource;

@@ -3,6 +3,7 @@ import { signUpType, signInType } from "../schema/user-schema.js";
 import User from "../models/User.js";
 import { hash, compare } from "bcrypt";
 import { generateToken } from "../utils/token-manager.js";
+import { setCookie } from "../utils/set-cookie.js";
 
 // GET-REQUEST -->
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -40,8 +41,10 @@ export const signUp = async (
     const hashedPassword = await hash(password, 10);
 
     const newUser = await User.create({
+      name: name,
       email: email,
       password: hashedPassword,
+      chats: [],
     });
 
     if (newUser) {
@@ -59,7 +62,7 @@ export const signUp = async (
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };
@@ -76,13 +79,18 @@ export const signIn = async (
   try {
     // check if user exists
     const existingUser = await User.findOne({ email });
+    console.log(existingUser);
+
+    
 
     if (existingUser) {
       // proceed to confirm if the password matches with the one stored.
 
       const isValid = await compare(password, existingUser.password);
+      console.log(isValid);
 
       if (isValid) {
+        console.log(isValid, "here now");
         // generate a token
 
         const accessToken = generateToken("ACCESS", {
@@ -93,12 +101,13 @@ export const signIn = async (
           userId: existingUser._id,
         });
 
+        setCookie(res, refreshToken);
+
         return res.status(200).json({
-          success: true,
-          message: "logged in succesfully",
+          name: existingUser.name,
+          email:email,
           token: {
             accessToken,
-            refreshToken,
           },
         });
       }
@@ -116,7 +125,30 @@ export const signIn = async (
   } catch (error) {
     res.status(500).json({
       sucess: false,
-      message: "internal server error",
+      message: error.message,
     });
+  }
+};
+
+export const signOut = (req: Request, res: Response) => {
+  // log out should clear the refresh token and also the frontend should clear off the inmemory accesstoken
+
+  try {
+    res
+      .cookie("refresh_token", "", {
+        httpOnly: true,
+        secure: true,
+        maxAge: 0, // clears the cookie immediately
+        sameSite: "none",
+      })
+      .json({
+        success: true,
+        message: "user logged out succesfully",
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
   }
 };
