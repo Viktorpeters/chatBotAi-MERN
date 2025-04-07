@@ -10,6 +10,7 @@ const appConfig = () => ({
   ACCESS_EXPIRY_TIME: getEnv("ACCESS_EXPIRY_TIME"),
   REFRESH_EXPIRY_TIME: getEnv("REFRESH_EXPIRY_TIME"),
   COOKIE_EXP_TIME: getEnv("COOKIE_EXP_TIME"),
+  ORGANIZATION_ID: getEnv("ORGANIZATION_ID"),
 });
 
 const getEnv = (key: string, defaultValue: string = ""): string => {
