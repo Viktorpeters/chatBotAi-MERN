@@ -12,7 +12,7 @@ type tokenType = "ACCESS" | "REFRESH";
 export const generateToken = (tokenType: tokenType, payload: TPayload) => {
   console.log(appCOnfigurations.JWT_SECRET)
   if (tokenType === "ACCESS") {
-    console.log(appCOnfigurations.JWT_SECRET)
+   
     return jwt.sign(payload, appCOnfigurations.JWT_SECRET, {
       expiresIn: +appCOnfigurations.ACCESS_EXPIRY_TIME,
     });

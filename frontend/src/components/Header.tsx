@@ -3,20 +3,21 @@ import Logo from "./shared/Logo";
 import { useAuth } from "../context/AuthContext";
 import NavigationLink from "./shared/NavigationLink";
 import useLogout from "../_hooks/useLogout";
+import { useEffect } from "react";
 
 const Header = () => {
-  const { token } = useAuth()!;
+  const { user } = useAuth()!;
 
   const { isLoading, logout } = useLogout();
 
   return (
     <AppBar
-      sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}
+      sx={{ bgcolor: "transparent", position: "static", boxShadow: "none",   }}
     >
-      <Toolbar sx={{ display: "flex" }}>
+      <Toolbar sx={{ display: "flex", width: '100%', bgcolor: 'red' }}>
         <Logo />
-        <div>
-          {token ? (
+        <div className="nav_action">
+          {user ? (
             <>
               <NavigationLink
                 bg="#00fffc"

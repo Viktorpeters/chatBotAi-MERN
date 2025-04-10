@@ -23,4 +23,5 @@ const getEnv = (key: string, defaultValue: string = ""): string => {
   return value;
 };
 
+
 export const appCOnfigurations = appConfig();

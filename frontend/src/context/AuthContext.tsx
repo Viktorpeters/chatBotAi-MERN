@@ -1,4 +1,9 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+} from "react";
 
 type User = {
   name: string;
@@ -11,7 +16,7 @@ type userAuth = {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   setToken: React.Dispatch<React.SetStateAction<string>>;
-  token: string
+  token: string;
 };
 
 const AuthContext = createContext<userAuth | undefined>(undefined);
@@ -21,6 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [token, setToken] = useState("");
 
+
   return (
     <AuthContext.Provider
       value={{
@@ -29,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser: setUser,
         setIsLoggedIn: setIsLoggedIn,
         setToken: setToken,
-        token: token
+        token: token,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../api/api";
+import { AxoisPrivate } from "../api/api";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -9,11 +9,18 @@ const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { setUser, setToken } = useAuth()!;
   const navigate = useNavigate();
+  const axiosInstance = AxoisPrivate();
 
   async function handleLogin(email: string, password: string) {
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/v1/user/signin", {
+      
+      if (axiosInstance instanceof Error) {
+        toast.error("error signing in, un-authorized");
+        return;
+      }
+
+      const response = await axiosInstance.post("/api/v1/user/signin", {
         email,
         password,
       });
@@ -23,6 +30,7 @@ const useLogin = () => {
       // set token
 
       setToken(response.data?.token?.accessToken);
+     
 
       // set the local storage
 
@@ -42,6 +50,7 @@ const useLogin = () => {
       setIsLoading(false);
 
       if (error instanceof AxiosError) {
+      
         toast.error(error?.response?.data?.message || "Bad Request");
       }
     } finally {

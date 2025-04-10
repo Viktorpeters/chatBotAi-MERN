@@ -2,8 +2,7 @@ import mongoose, {Document} from "mongoose";
 import { randomUUID } from "crypto";
 
 
-interface IChatSchema extends Document {
-  id: string;
+export interface IChatSchema extends Document {
   role: string;
   content: string;
 }
@@ -16,10 +15,6 @@ interface IUserSchema extends Document {
 }
 
 const chatSchema = new mongoose.Schema<IChatSchema>({
-  id: {
-    type: String,
-    default: randomUUID,
-  },
   role: {
     type: String,
     required: true,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../api/api";
+import { AxoisPrivate } from "../api/api";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -8,15 +8,22 @@ import { useAuth } from "../context/AuthContext";
 const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setToken } = useAuth()!;
+  const { setToken, setUser } = useAuth()!;
+
+  const axiosInstance = AxoisPrivate();
 
   async function logout() {
     setIsLoading(true);
     try {
-      await axios.get("http://127.0.0.1:2500/api/v1/user/logout");
+      if (axiosInstance instanceof Error) {
+        toast.error("error signing out");
+        return;
+      }
+      await axiosInstance.get("http://127.0.0.1:2500/api/v1/user/logout");
 
       localStorage.removeItem("users");
       setToken("");
+      setUser(null);
       toast.success("signed out succesfully");
 
       navigate("/login");

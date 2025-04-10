@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import { hash, compare } from "bcrypt";
 import { generateToken } from "../utils/token-manager.js";
 import { setCookie } from "../utils/set-cookie.js";
+import jwt from "jsonwebtoken";
+import { appCOnfigurations } from "../config/app.config.js";
 // GET-REQUEST -->
 export const getAllUsers = async (req, res) => {
     // get all Users
@@ -62,7 +64,6 @@ export const signIn = async (req, res) => {
         if (existingUser) {
             // proceed to confirm if the password matches with the one stored.
             const isValid = await compare(password, existingUser.password);
-            console.log(isValid);
             if (isValid) {
                 console.log(isValid, "here now");
                 // generate a token
@@ -116,7 +117,49 @@ export const signOut = (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
+        });
+    }
+};
+export const refresh = (req, res, next) => {
+    const refreshToken = req.cookies?.refresh_token;
+    const userId = req.user;
+    if (!refreshToken)
+        return res
+            .status(401)
+            .json({ success: false, message: "Token not available" });
+    // proceed to verify the token
+};
+export const authStatus = (req, res, next) => {
+    // check the cookie if there is any refresh token in it .
+    const refreshToken = req.cookies.refresh_token;
+    console.log(refreshToken);
+    if (!refreshToken) {
+        return res.status(401).json({
+            success: false,
+            message: "No Aceess Token, Pls login",
+        });
+    }
+    // check if the token is still valid .
+    try {
+        const isValid = jwt.verify(refreshToken, appCOnfigurations.JWT_SECRET);
+        console.log(isValid);
+        // get the userId from the sotred refreshToken ,and use it to generate another token
+        const accessToken = generateToken("ACCESS", {
+            userId: isValid.userId,
+        });
+        console.log(accessToken);
+        return res.status(200).json({
+            success: true,
+            token: {
+                accessToken: accessToken,
+            },
+        });
+    }
+    catch (error) {
+        res.status(401).json({
+            sucess: false,
+            message: error.message,
         });
     }
 };

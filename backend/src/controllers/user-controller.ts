@@ -4,6 +4,9 @@ import User from "../models/User.js";
 import { hash, compare } from "bcrypt";
 import { generateToken } from "../utils/token-manager.js";
 import { setCookie } from "../utils/set-cookie.js";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { appCOnfigurations } from "../config/app.config.js";
+import mongoose from "mongoose";
 
 // GET-REQUEST -->
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -81,31 +84,28 @@ export const signIn = async (
     const existingUser = await User.findOne({ email });
     console.log(existingUser);
 
-    
-
     if (existingUser) {
       // proceed to confirm if the password matches with the one stored.
 
       const isValid = await compare(password, existingUser.password);
-      console.log(isValid);
 
       if (isValid) {
         console.log(isValid, "here now");
         // generate a token
 
         const accessToken = generateToken("ACCESS", {
-          userId: existingUser._id,
+          userId: existingUser._id as mongoose.Schema.Types.ObjectId,
         });
 
         const refreshToken = generateToken("REFRESH", {
-          userId: existingUser._id,
+          userId: existingUser._id as mongoose.Schema.Types.ObjectId,
         });
 
         setCookie(res, refreshToken);
 
         return res.status(200).json({
           name: existingUser.name,
-          email:email,
+          email: email,
           token: {
             accessToken,
           },
@@ -148,7 +148,64 @@ export const signOut = (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
-    })
+      message: error.message,
+    });
+  }
+};
+
+export const refresh = (req: Request, res: Response, next: NextFunction) => {
+  const refreshToken = req.cookies?.refresh_token as string;
+  const userId = req.user;
+
+  if (!refreshToken)
+    return res
+      .status(401)
+      .json({ success: false, message: "Token not available" });
+
+  // proceed to verify the token
+};
+
+export const authStatus = (req: Request, res: Response, next: NextFunction) => {
+  // check the cookie if there is any refresh token in it .
+
+  const refreshToken = req.cookies.refresh_token;
+  console.log(refreshToken);
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      success: false,
+      message: "No Aceess Token, Pls login",
+    });
+  }
+
+  // check if the token is still valid .
+
+  try {
+    const isValid = jwt.verify(
+      refreshToken,
+      appCOnfigurations.JWT_SECRET
+    ) as any;
+
+    console.log(isValid);
+
+    // get the userId from the sotred refreshToken ,and use it to generate another token
+
+    const accessToken = generateToken("ACCESS", {
+      userId: isValid.userId as mongoose.Schema.Types.ObjectId,
+    });
+
+    console.log(accessToken);
+
+    return res.status(200).json({
+      success: true,
+      token: {
+        accessToken: accessToken,
+      },
+    });
+  } catch (error) {
+    res.status(401).json({
+      sucess: false,
+      message: error.message,
+    });
   }
 };

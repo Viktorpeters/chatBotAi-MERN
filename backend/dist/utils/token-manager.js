@@ -3,7 +3,6 @@ import { appCOnfigurations } from "../config/app.config.js";
 export const generateToken = (tokenType, payload) => {
     console.log(appCOnfigurations.JWT_SECRET);
     if (tokenType === "ACCESS") {
-        console.log(appCOnfigurations.JWT_SECRET);
         return jwt.sign(payload, appCOnfigurations.JWT_SECRET, {
             expiresIn: +appCOnfigurations.ACCESS_EXPIRY_TIME,
         });
