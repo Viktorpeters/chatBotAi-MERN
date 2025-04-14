@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const appConfig = () => ({
-  OPEN_AI_SECRET: getEnv("OPEN_AI_SECRET"),
+  GOOGLE_AI_SECRET: getEnv("GOOGLE_AI_SECRET"),
   MONGODB_URL: getEnv("MONGODB_URL"),
   JWT_SECRET: getEnv("JWT_SECRET"),
   PORT: getEnv("PORT"),
@@ -12,6 +12,7 @@ const appConfig = () => ({
   COOKIE_EXP_TIME: getEnv("COOKIE_EXP_TIME"),
   ORGANIZATION_ID: getEnv("ORGANIZATION_ID"),
 });
+
 
 const getEnv = (key: string, defaultValue: string = ""): string => {
   const value = process.env[key];
@@ -22,6 +23,5 @@ const getEnv = (key: string, defaultValue: string = ""): string => {
 
   return value;
 };
-
 
 export const appCOnfigurations = appConfig();

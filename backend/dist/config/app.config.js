@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 const appConfig = () => ({
-    OPEN_AI_SECRET: getEnv("OPEN_AI_SECRET"),
+    GOOGLE_AI_SECRET: getEnv("GOOGLE_AI_SECRET"),
     MONGODB_URL: getEnv("MONGODB_URL"),
     JWT_SECRET: getEnv("JWT_SECRET"),
     PORT: getEnv("PORT"),

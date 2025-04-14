@@ -12,6 +12,7 @@ const Chatitem = ({
 }) => {
   const auth = useAuth()!;
 
+
   function extractCodeFromString(message: string) {
     if (message.includes("```")) {
       const blocks = message.split("```");
@@ -19,6 +20,7 @@ const Chatitem = ({
       return blocks;
     }
   }
+
 
   function isCodeBlock(str: string) {
     if (
@@ -36,6 +38,8 @@ const Chatitem = ({
 
     return false;
   }
+
+
   const messageBlocks = extractCodeFromString(content);
 
   return role === "assistant" ? (
@@ -83,8 +87,8 @@ const Chatitem = ({
         }}
       >
         <Avatar sx={{ ml: "0", bgcolor: "black", color: "white" }}>
-          {auth?.user?.name[0]}
-          {auth?.user?.name.split(" ")[1][0]}
+          {auth.user?.name[0]}
+          {auth.user?.name[auth.user?.name.length - 1]}
         </Avatar>
         <Box>
           {!messageBlocks && (
@@ -94,7 +98,7 @@ const Chatitem = ({
             messageBlocks.length &&
             messageBlocks.map((block) =>
               isCodeBlock(block) ? (
-                <SyntaxHighlighter style={coldarkDark} language="javascript">
+                <SyntaxHighlighter style={coldarkDark}>
                   {block}
                 </SyntaxHighlighter>
               ) : (

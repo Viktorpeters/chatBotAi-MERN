@@ -1,28 +1,38 @@
-import mongoose, {Document} from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { randomUUID } from "crypto";
-
+import { Part } from "@google/generative-ai";
+import { string } from "zod";
 
 export interface IChatSchema extends Document {
   role: string;
-  content: string;
+  parts: Parts[];
+}
+
+interface Parts {
+  text: string;
 }
 
 interface IUserSchema extends Document {
   name: string;
   email: string;
   password: string;
-  chats: IChatSchema[];  
+  chats: IChatSchema[];
 }
 
 const chatSchema = new mongoose.Schema<IChatSchema>({
   role: {
     type: String,
     required: true,
+    enum: ["user", "model"],
   },
-  content: {
-    type: String,
-    required: true,
-  },
+  parts: [
+    {
+      text: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 const userSchema = new mongoose.Schema<IUserSchema>({

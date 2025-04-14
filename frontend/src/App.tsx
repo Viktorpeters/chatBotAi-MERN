@@ -11,16 +11,21 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 
+
+
 function App() {
   const { setUser, setToken, token, user } = useAuth()!;
   const navigate = useNavigate();
   // attempt to get the token again on reload
+
+
 
   useLayoutEffect(() => {
     // fetch the local storage
 
     const revalidateUser = async () => {
       const user = localStorage.getItem("users");
+      console.log(user)
 
       try {
         if (user) {
@@ -38,6 +43,7 @@ function App() {
           // set the token
           if (!response.ok) {
             toast.error("pleae login again");
+            localStorage.removeItem('users')
             navigate("/login");
 
             return;
@@ -51,7 +57,7 @@ function App() {
           return;
         }
       } catch (error) {
-       
+       localStorage.removeItem('users')
         navigate("/login");
       }
     };

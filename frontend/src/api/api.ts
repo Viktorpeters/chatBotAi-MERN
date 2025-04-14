@@ -16,7 +16,7 @@ export const AxoisPrivate = (): AxiosInstance | Error => {
   }, [token, navigate]);
 
   return axios.create({
-    baseURL: "http://127.0.0.1:2500",
+    baseURL: "http://127.0.0.1:2520",
     withCredentials: true,
     headers: {
       Authorization: `Bearer ${token}`,

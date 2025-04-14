@@ -7,6 +7,7 @@ import { setCookie } from "../utils/set-cookie.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { appCOnfigurations } from "../config/app.config.js";
 import mongoose from "mongoose";
+import { validateJWt } from "../utils/decodeJwt.js";
 
 // GET-REQUEST -->
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -155,14 +156,52 @@ export const signOut = (req: Request, res: Response) => {
 
 export const refresh = (req: Request, res: Response, next: NextFunction) => {
   const refreshToken = req.cookies?.refresh_token as string;
-  const userId = req.user;
 
   if (!refreshToken)
     return res
       .status(401)
-      .json({ success: false, message: "Token not available" });
+      .json({ success: false, message: "re-authenticate again" });
 
   // proceed to verify the token
+
+  try {
+    const decode = validateJWt(refreshToken);
+
+    console.log(decode);
+
+    if (decode.isExpired) {
+      return res.status(401).json({
+        success: false,
+        message: "re-authenticate again",
+      });
+    }
+
+    if (!decode.isValid) {
+      return res.status(401).json({
+        success: false,
+        message: "token malformed(invalid)",
+      });
+    }
+
+    // proceed to generate a new token for the user
+
+    const accessToken = generateToken("ACCESS", {
+      userId: decode.decodedInfo.userId,
+    });
+
+
+    res.status(201).json({
+      suceess: true,
+      token: {
+        accessToken: accessToken,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const authStatus = (req: Request, res: Response, next: NextFunction) => {

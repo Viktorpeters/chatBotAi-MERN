@@ -14,9 +14,26 @@ app.use(expres.json());
 app.use(expres.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use("/api/v1", appRouter);
-connectToDatabase().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+app.use((error, req, res, next) => {
+    res.status(500).json({
+        success: false,
+        message: error.message,
     });
+});
+connectToDatabase().then(() => {
+    app
+        .listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    })
+        .on("error", (err) => {
+        if (err.code === "EADDRINUSE") {
+            console.error(`❌ Port ${PORT} is already in use.`);
+            process.exit(1);
+        }
+        else {
+            throw err;
+        }
+    });
+    ;
 });
 //# sourceMappingURL=index.js.map

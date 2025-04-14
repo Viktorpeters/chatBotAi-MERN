@@ -1,8 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import User, { IChatSchema } from "../models/User.js";
-import { configureOpenAI } from "../config/opem-api.js";
-import { OpenAIApi, ChatCompletionRequestMessage } from "openai";
+import { appCOnfigurations } from "../config/app.config.js";
+import { GoogleGenAI } from "@google/genai";
 
+const ai = new GoogleGenAI({ apiKey: appCOnfigurations.GOOGLE_AI_SECRET });
+
+type GeminiMessage = {
+  role: "user" | "model";
+  parts: { text: string }[];
+};
 
 export const generateChatCompletion = async (
   req: Request,
@@ -10,89 +16,96 @@ export const generateChatCompletion = async (
   next: NextFunction
 ) => {
   const { message } = req.body;
-    try {
-        
-    const user = await User.findById(res.locals.jwtData.id);
 
+  try {
+    const user = await User.findById(req.user.userId);
+    console.log(user);
     if (!user)
       return res
         .status(401)
         .json({ message: "User not registered OR Token malfunctioned" });
-    // grab chats of user
-    const chats = user.chats.map(({ role, content }) => ({
-      role,
-      content,
-    })) as ChatCompletionRequestMessage[];
 
-    chats.push({ content: message, role: "user" });
-    user.chats.push({ content: message, role: "user" } as IChatSchema);
+    // grab all the chats of user
+    const chats: GeminiMessage[] = user.chats.map(({ role, parts }) => ({
+      role: role as "user" | "model",
+      parts: parts.map((p: { text: string }) => ({ text: p.text })),
+    }));
 
-    // send all chats with new one to openAI API
-    const config = configureOpenAI();
-    const openai = new OpenAIApi(config);
-    // get latest response
-    const chatResponse = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: chats,
-    });
-
-    const assistantMessage = chatResponse.data.choices[0].message;
-
+    // updating the user chats in the database
     user.chats.push({
-      content: assistantMessage.content,
-      role: assistantMessage.role,
+      parts: [{ text: message }],
+      role: "user",
     } as IChatSchema);
 
-        await user.save();
-        
-    return res.status(200).json({ chats: user.chats });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
-};
+    // now get the feedback of the assistant ai
+    const chat = ai.chats.create({
+      model: "gemini-2.0-flash",
+      history: [],
+    });
 
-export const sendChatsToUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    //user token check
-    const user = await User.findById(res.locals.jwtData.id);
-    if (!user) {
-      return res.status(401).send("User not registered OR Token malfunctioned");
-    }
-    if (user._id.toString() !== res.locals.jwtData.id) {
-      return res.status(401).send("Permissions didn't match");
-    }
-    return res.status(200).json({ message: "OK", chats: user.chats });
-  } catch (error) {
-    console.log(error);
-    return res.status(200).json({ message: "ERROR", cause: error.message });
-  }
-};
+    const response = await chat.sendMessage({
+      message: message,
+    });
 
-export const deleteChats = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    //user token check
-    const user = await User.findById(res.locals.jwtData.id);
-    if (!user) {
-      return res.status(401).send("User not registered OR Token malfunctioned");
-    }
-    if (user._id.toString() !== res.locals.jwtData.id) {
-      return res.status(401).send("Permissions didn't match");
-    }
-    //@ts-ignore
-    user.chats = [];
+    // when feedback is gotten from the AI ,feed it back into the database
+
+    user.chats.push({
+      parts: [{ text: response.text }],
+      role: "model",
+    } as IChatSchema);
+
     await user.save();
-    return res.status(200).json({ message: "OK" });
+
+    res.status(201).json({
+      success: true,
+      data: response.text,
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(200).json({ message: "ERROR", cause: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
+// export const sendChatsToUser = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     //user token check
+//     const user = await User.findById(res.locals.jwtData.id);
+//     if (!user) {
+//       return res.status(401).send("User not registered OR Token malfunctioned");
+//     }
+//     if (user._id.toString() !== res.locals.jwtData.id) {
+//       return res.status(401).send("Permissions didn't match");
+//     }
+//     return res.status(200).json({ message: "OK", chats: user.chats });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(200).json({ message: "ERROR", cause: error.message });
+//   }
+// };
+
+// export const deleteChats = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     //user token check
+//     const user = await User.findById(res.locals.jwtData.id);
+//     if (!user) {
+//       return res.status(401).send("User not registered OR Token malfunctioned");
+//     }
+//     if (user._id.toString() !== res.locals.jwtData.id) {
+//       return res.status(401).send("Permissions didn't match");
+//     }
+//     //@ts-ignore
+//     user.chats = [];
+//     await user.save();
+//     return res.status(200).json({ message: "OK" });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(200).json({ message: "ERROR", cause: error.message });
+//   }
+// };
