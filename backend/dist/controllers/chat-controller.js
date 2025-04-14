@@ -65,5 +65,23 @@ export const getAllChatsOfUser = async (req, res, next) => {
 };
 export const clearConversation = async (req, res) => {
     const { userId } = req.user;
+    // find the user with the userId
+    try {
+        const user = await User.findById(userId);
+        if (user) {
+            user.chats = [];
+            await user.save();
+            res.status(200).json({
+                success: true,
+                data: [],
+            });
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 //# sourceMappingURL=chat-controller.js.map
