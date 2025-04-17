@@ -7,6 +7,7 @@ import useSignUpHook from "../hooks/useSIgnUp";
 import toast from "react-hot-toast";
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const { isLoading, signup } = useSignUpHook();
   const [userDetails, setUserDetails] = useState({
     name: "",
@@ -26,12 +27,32 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!userDetails.name || !userDetails.email || !userDetails.password) {
+      toast.error("all fields are important");
+
+      return;
+    }
+
     try {
       const data = await signup(
         userDetails.email,
         userDetails.name,
         userDetails.password
       );
+
+      if (!data) {
+        setUserDetails({
+          name: "",
+          email: "",
+          password: "",
+        });
+
+        return;
+      }
+
+      toast.success("user created, proceed to login");
+
+      navigate("/login");
     } catch (error) {
       toast.error("cant sign up, please try again");
     }

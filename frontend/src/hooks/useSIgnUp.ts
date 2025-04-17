@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import AxiosPrivate from "../api/axiosPrivate";
 import toast from "react-hot-toast";
@@ -17,8 +18,8 @@ const useSignUpHook = () => {
       setIsLoading(false);
 
       return response.data;
-    } catch (error) {
-      toast.error("cant sign up, some error occured");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'an error occured');
       setIsLoading(false);
     }
   }

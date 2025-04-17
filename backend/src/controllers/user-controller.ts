@@ -30,6 +30,8 @@ export const signUp = async (
   const { name, email, password } = req.body;
   // check if the user already exists
 
+  console.log(name, email, password)
+
   try {
     const existingUser = await User.findOne({ email: email });
 
