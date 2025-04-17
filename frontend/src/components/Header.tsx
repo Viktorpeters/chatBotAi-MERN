@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useLayoutEffect } from "react";
 import {
   AppBar,
@@ -15,13 +16,18 @@ import { Login, Logout } from "@mui/icons-material";
 import Logo from "./chared/Logo";
 import NavigationLink from "./chared/NavigationLink";
 import { useAuth } from "../context/context";
+import useLogout from "../hooks/useLogout";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type StoredState = {
   state: string;
 } | null;
 
 const Header = () => {
+  const navigate = useNavigate();
   const { setIsLogged, isLogged } = useAuth()!;
+  const { logout, isLoading } = useLogout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -35,22 +41,41 @@ const Header = () => {
     const raw = localStorage.getItem("state");
     const state: StoredState = raw ? JSON.parse(raw) : null;
 
-    
     if (state) {
       setIsLogged(true);
     } else {
       setIsLogged(false);
     }
   }, [setIsLogged]);
-  function handleLogout(): Promise<void> {
-   
+  async function handleLogout(): Promise<void> {
+    try {
+      await logout();
+
+      // remove the localstorage
+
+      localStorage.removeItem("state");
+
+      navigate("/");
+
+      toast.success("logged out successfully");
+    } catch (error) {
+      toast.error("error logging out");
+    }
   }
 
   return (
     <AppBar
-      sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}
+      sx={{
+        bgcolor: "transparent",
+        position: "static",
+        boxShadow: "none",
+        overflowX: "hidden",
+        width: "100%",
+      }}
     >
-      <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+      <Toolbar
+        sx={{ display: "flex", alignItems: "center", overflowX: "hidden" }}
+      >
         <Logo />
         <div>
           {isLogged ? (
@@ -103,7 +128,6 @@ const Header = () => {
             <IconButton
               onClick={handleClick}
               size="small"
-              sx={{ ml: 2 }}
               aria-controls={open ? "account-menu" : undefined}
               aria-haspopup="true"
               aria-expanded={open ? "true" : undefined}
@@ -120,6 +144,7 @@ const Header = () => {
           open={open}
           onClose={handleClose}
           onClick={handleClose}
+          disableScrollLock
           slotProps={{
             paper: {
               elevation: 0,

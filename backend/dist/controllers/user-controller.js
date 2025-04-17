@@ -166,7 +166,6 @@ export const refresh = (req, res, next) => {
 export const authStatus = (req, res, next) => {
     // check the cookie if there is any refresh token in it .
     const refreshToken = req.cookies.refresh_token;
-    console.log(refreshToken);
     if (!refreshToken) {
         return res.status(401).json({
             success: false,
@@ -176,12 +175,10 @@ export const authStatus = (req, res, next) => {
     // check if the token is still valid .
     try {
         const isValid = jwt.verify(refreshToken, appCOnfigurations.JWT_SECRET);
-        console.log(isValid);
         // get the userId from the sotred refreshToken ,and use it to generate another token
         const accessToken = generateToken("ACCESS", {
             userId: isValid.userId,
         });
-        console.log(accessToken);
         return res.status(200).json({
             success: true,
             token: {

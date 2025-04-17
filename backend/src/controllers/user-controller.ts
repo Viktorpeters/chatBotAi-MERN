@@ -210,7 +210,7 @@ export const authStatus = (req: Request, res: Response, next: NextFunction) => {
   // check the cookie if there is any refresh token in it .
 
   const refreshToken = req.cookies.refresh_token;
-  console.log(refreshToken);
+
 
   if (!refreshToken) {
     return res.status(401).json({
@@ -227,7 +227,7 @@ export const authStatus = (req: Request, res: Response, next: NextFunction) => {
       appCOnfigurations.JWT_SECRET
     ) as any;
 
-    console.log(isValid);
+
 
     // get the userId from the sotred refreshToken ,and use it to generate another token
 
@@ -235,7 +235,7 @@ export const authStatus = (req: Request, res: Response, next: NextFunction) => {
       userId: isValid.userId as mongoose.Schema.Types.ObjectId,
     });
 
-    console.log(accessToken);
+
 
     return res.status(200).json({
       success: true,
