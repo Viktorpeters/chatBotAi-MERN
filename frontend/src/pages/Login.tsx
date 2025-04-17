@@ -1,92 +1,119 @@
-import React from "react";
-import { IoIosLogIn } from "react-icons/io";
-import { Box, Typography, Button } from "@mui/material";
-import img from "../assets/airobot.png";
-import CustomizedInput from "../components/shared/CustomizedInput";
-import useLogin from "../_hooks/useLogin";
+import { Box, TextField, Typography } from "@mui/material";
+import img from "../assets/signin.svg";
+import { Link } from "react-router-dom";
 
 const Login = () => {
-  const { isLoading, handleLogin } = useLogin();
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    // let the useLogin hookhandle the login
-    await handleLogin(email, password);
-
-
-  };
   return (
-    <Box width={"100%"} height={"100%"} display="flex" flex={1}>
-      <Box padding={8} mt={8} display={{ md: "flex", sm: "none", xs: "none" }}>
-        <img src={img} alt="Robot" style={{ width: "400px" }} />
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: {
+          xs: "column", // Stack on small screens
+          md: "row", // Side-by-side on medium and up
+        },
+        gap: { xs: "30px", md: "15px" },
+        p: { xs: 2, md: 4 },
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: "100px",
+      }}
+    >
+      {/* Image Section */}
+      <Box
+        sx={{
+          flex: 1,
+          display: {
+            xs: "none",
+            md: "block", // Show image on medium and up
+          },
+        }}
+      >
+        <img
+          src={img}
+          alt="chatbot"
+          style={{
+            width: "90%",
+            borderRadius: "10px",
+            objectFit: "cover",
+            maxHeight: "500px",
+          }}
+        />
       </Box>
 
+      {/* Form Section */}
       <Box
-        display={"flex"}
-        flex={{ xs: 1, md: 0.5 }}
-        justifyContent={"center"}
-        alignItems={"center"}
-        padding={2}
-        ml={"auto"}
-        mt={16}
+        component="form"
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          gap: 3,
+          maxWidth: "500px",
+          width: "100%",
+          mx: "auto",
+        }}
       >
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            margin: "auto",
-            padding: "30px",
-            boxShadow: "10px 10px 20px #000",
-            borderRadius: "10px",
-            border: "none",
+        <Typography
+          sx={{
+            fontWeight: 700,
+            textTransform: "uppercase",
+            textAlign: "center",
+            fontSize: { xs: "20px", sm: "26px", md: "30px" },
+            color: "white",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            <Typography
-              variant="h4"
-              textAlign="center"
-              padding={2}
-              fontWeight={600}
-            >
-              {
-                isLoading? (
-                  "signing in....."
-                ) : (
-                  "Login"
-                )
-              }
-            </Typography>
-            <CustomizedInput type="email" name="email" label="Email" />
-            <CustomizedInput type="password" name="password" label="Password" />
-            <Button
-              type="submit"
-              sx={{
-                px: 2,
-                py: 1,
-                mt: 2,
-                width: "400px",
-                borderRadius: 2,
-                bgcolor: "#00fffc",
-                ":hover": {
-                  bgcolor: "white",
-                  color: "black",
-                },
-              }}
-              endIcon={<IoIosLogIn />}
-            >
-              Login
-            </Button>
-          </Box>
-        </form>
+          Sign in to chat with Viktron
+        </Typography>
+
+        <TextField
+          fullWidth
+          label="Enter Email"
+          variant="outlined"
+          type="email"
+          InputLabelProps={{
+            style: { color: "white" },
+          }}
+          InputProps={{
+            sx: {
+              borderRadius: "8px",
+              color: "white",
+            },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "8px",
+            },
+          }}
+        />
+
+        <TextField
+          fullWidth
+          label="Enter Password"
+          variant="outlined"
+          type="password"
+          InputLabelProps={{
+            style: { color: "white" },
+          }}
+          InputProps={{
+            sx: {
+              borderRadius: "8px",
+              color: "white",
+            },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "8px",
+            },
+          }}
+        />
+        <Typography>
+          Dont have an account ?{" "}
+          <Link style={{ color: "gray" }} to={"/signup"}>
+            Sign up
+          </Link>{" "}
+          to continue
+        </Typography>
       </Box>
     </Box>
   );

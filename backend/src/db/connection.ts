@@ -17,7 +17,7 @@ const disconnectFromDatabase = async () => {
   try {
     await disconnect();
   } catch (error) {
-    throw new Error("Error disconnecting from Mongo");
+    console.log(error.message)
   }
 };
 

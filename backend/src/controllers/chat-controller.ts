@@ -19,7 +19,7 @@ export const generateChatCompletion = async (
 
   try {
     const user = await User.findById(req.user.userId);
-    console.log(user);
+
     if (!user)
       return res
         .status(401)
@@ -60,6 +60,8 @@ export const generateChatCompletion = async (
       success: true,
       data: response.text,
     });
+
+    
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

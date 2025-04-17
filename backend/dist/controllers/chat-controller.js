@@ -6,7 +6,6 @@ export const generateChatCompletion = async (req, res, next) => {
     const { message } = req.body;
     try {
         const user = await User.findById(req.user.userId);
-        console.log(user);
         if (!user)
             return res
                 .status(401)

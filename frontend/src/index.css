@@ -31,11 +31,6 @@ body {
   animation: rotation 8s infinite linear;
 }
 
-.nav_action {
-
-}
-
-
 @keyframes rotation {
   from {
     transform: rotate(0deg);
@@ -46,9 +41,10 @@ body {
 }
 
 
-@media (max-width: 480px) {
-  .nav-link  {
-    font-size: 12px;
-    padding: 6px 10px;
+
+@media (max-width: 580px) {
+  .nav-link {
+     padding: 4px 10px;
+     font-size: 12px;
   }
 }

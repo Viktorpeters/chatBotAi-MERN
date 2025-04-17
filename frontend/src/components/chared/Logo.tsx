@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import img from '../../../public/viktron.png'
+import img from "../../assets/aipics.avif";
+
 const Logo = () => {
   return (
     <div
@@ -15,8 +16,8 @@ const Logo = () => {
         <img
           src={img}
           alt="openai"
-          width={"50px"}
-          height={"50px"}
+          width={"30px"}
+          height={"30px"}
           className="image-inverted"
         />
       </Link>{" "}
@@ -28,7 +29,7 @@ const Logo = () => {
           textShadow: "2px 2px 20px #000",
         }}
       >
-        <span style={{ fontSize: "20px" }}>viktron</span>-AI-Assistant
+        <span style={{ fontSize: "20px" }}>viktron</span>-GPT
       </Typography>
     </div>
   );
