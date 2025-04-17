@@ -1,8 +1,69 @@
-import { Box, TextField, Typography } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Box, Button, TextField, Typography } from "@mui/material";
 import img from "../assets/signin.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useLogin from "../hooks/useLogin";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useAuth } from "../context/context";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { setIsLogged } = useAuth()!;
+  const { login, isLoading } = useLogin();
+  const [userDetails, setUserDetails] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const data = await login(userDetails.email, userDetails.password);
+
+      if (!data) {
+        setUserDetails({
+          email: "",
+          password: "",
+        });
+
+        return;
+      }
+
+      // update the local storage.
+      localStorage.setItem(
+        "state",
+        JSON.stringify({
+          state: true,
+        })
+      );
+
+      setIsLogged(true);
+      navigate("/chats");
+      toast.success("user logged in succesfully");
+      setUserDetails({
+        email: "",
+        password: "",
+      });
+    } catch (error) {
+      toast.error("cant sign up, please try again");
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setUserDetails((prev) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -53,6 +114,7 @@ const Login = () => {
           width: "100%",
           mx: "auto",
         }}
+        onSubmit={handleSubmit}
       >
         <Typography
           sx={{
@@ -85,6 +147,9 @@ const Login = () => {
               borderRadius: "8px",
             },
           }}
+          name="email"
+          value={userDetails.email}
+          onChange={handleChange}
         />
 
         <TextField
@@ -106,7 +171,13 @@ const Login = () => {
               borderRadius: "8px",
             },
           }}
+          name="password"
+          value={userDetails.password}
+          onChange={handleChange}
         />
+        <Button type="submit" variant="contained">
+          {isLoading ? "Loading..." : "Sign in"}
+        </Button>
         <Typography>
           Dont have an account ?{" "}
           <Link style={{ color: "gray" }} to={"/signup"}>

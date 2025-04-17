@@ -57,7 +57,7 @@ const Home = () => {
             Built With love by
             <span>
               <Link style={{ color: "white" }} className="nav-link" to={""}>
-                Viktro Ajayi
+                Viktor Ajayi
               </Link>
             </span>
             💘

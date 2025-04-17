@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -11,14 +11,17 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { Login,  Logout } from "@mui/icons-material";
-
+import { Login, Logout } from "@mui/icons-material";
 import Logo from "./chared/Logo";
 import NavigationLink from "./chared/NavigationLink";
+import { useAuth } from "../context/context";
+
+type StoredState = {
+  state: string;
+} | null;
 
 const Header = () => {
-  const user = false;
-
+  const { setIsLogged, isLogged } = useAuth()!;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -27,6 +30,22 @@ const Header = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  useLayoutEffect(() => {
+    const raw = localStorage.getItem("state");
+    const state: StoredState = raw ? JSON.parse(raw) : null;
+
+    
+    if (state) {
+      setIsLogged(true);
+    } else {
+      setIsLogged(false);
+    }
+  }, [setIsLogged]);
+  function handleLogout(): Promise<void> {
+   
+  }
+
   return (
     <AppBar
       sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}
@@ -34,7 +53,7 @@ const Header = () => {
       <Toolbar sx={{ display: "flex", alignItems: "center" }}>
         <Logo />
         <div>
-          {user ? (
+          {isLogged ? (
             <>
               <NavigationLink
                 bg="#00fffc"
@@ -47,6 +66,7 @@ const Header = () => {
                 textColor="white"
                 to="/"
                 text="logout"
+                onClick={handleLogout}
               />
             </>
           ) : (
@@ -134,9 +154,13 @@ const Header = () => {
           <Divider />
           <MenuItem onClick={handleClose}>
             <ListItemIcon>
-              <Logout fontSize="small" />
+              {isLogged ? (
+                <Logout fontSize="small" />
+              ) : (
+                <Login fontSize="small" />
+              )}
             </ListItemIcon>
-            Logout
+            {isLogged ? "Logout" : "Login"}
           </MenuItem>
         </Menu>
       </Toolbar>

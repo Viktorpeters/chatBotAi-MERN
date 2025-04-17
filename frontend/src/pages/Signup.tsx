@@ -47,6 +47,8 @@ const SignUp = () => {
           password: "",
         });
 
+        toast.error("cant sign up, please try again");
+
         return;
       }
 

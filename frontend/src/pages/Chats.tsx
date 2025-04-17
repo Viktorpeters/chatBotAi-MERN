@@ -105,29 +105,31 @@ const Chat = () => {
     <Box
       sx={{
         display: "flex",
-        flex: 1,
+        flexDirection: { xs: "column", md: "row" },
         width: "100%",
         height: "100%",
         mt: 3,
-        gap: 3,
+        gap: { xs: 2, md: 3 },
+        px: { xs: 2, md: 4 },
       }}
     >
+      {/* Sidebar */}
       <Box
         sx={{
-          display: { md: "flex", xs: "none", sm: "none" },
-          flex: 0.2,
+          display: { xs: "none", md: "flex" },
+          flex: 0.3,
           flexDirection: "column",
         }}
       >
         <Box
           sx={{
-            display: "flex",
             width: "100%",
-            height: "60vh",
+            height: "100%",
             bgcolor: "rgb(17,29,39)",
             borderRadius: 5,
+            p: 2,
+            display: "flex",
             flexDirection: "column",
-            mx: 3,
           }}
         >
           <Avatar
@@ -137,23 +139,36 @@ const Chat = () => {
               bgcolor: "white",
               color: "black",
               fontWeight: 700,
+              width: 60,
+              height: 60,
             }}
-          ></Avatar>
-          <Typography sx={{ mx: "auto", fontFamily: "work sans" }}>
+          />
+          <Typography
+            variant="h6"
+            sx={{ mx: "auto", fontFamily: "work sans", textAlign: "center" }}
+          >
             You are talking to a ChatBOT
           </Typography>
-          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
-            You can ask some questions related to Knowledge, Business, Advices,
-            Education, etc. But avoid sharing personal information
+          <Typography
+            sx={{
+              mx: "auto",
+              fontFamily: "work sans",
+              my: 3,
+              p: 2,
+              textAlign: "center",
+              fontSize: "14px",
+            }}
+          >
+            You can ask questions related to Knowledge, Business, Advice,
+            Education, etc. Avoid sharing personal info.
           </Typography>
           <Button
+            fullWidth
             sx={{
-              width: "200px",
-              my: "auto",
+              mt: "auto",
               color: "white",
-              fontWeight: "700",
+              fontWeight: 700,
               borderRadius: 3,
-              mx: "auto",
               bgcolor: red[300],
               ":hover": {
                 bgcolor: red.A400,
@@ -164,59 +179,63 @@ const Chat = () => {
           </Button>
         </Box>
       </Box>
+
+      {/* Chat Area */}
       <Box
         sx={{
           display: "flex",
-          flex: { md: 0.8, xs: 1, sm: 1 },
+          flex: 1,
           flexDirection: "column",
-          px: 3,
+          px: { xs: 1, md: 2 },
+          maxWidth: "100vw",
+          overflowX: "hidden",
         }}
       >
         <Typography
           sx={{
-            fontSize: {
-              xs: "15px",
-              sm: "17px",
-              md: "27px",
-              lg: "30px",
-            },
+            fontSize: { xs: "20px", sm: "24px", md: "28px", lg: "30px" },
             color: "white",
             mb: 2,
             mx: "auto",
-            fontWeight: "600",
+            fontWeight: 600,
+            textAlign: "center",
+            px: 1,
           }}
         >
-          Gemini 2.5 - flash
+          Gemini 2.5 - Flash
         </Typography>
+
         <Box
           sx={{
             width: "100%",
-            height: "60vh",
+            flex: 1,
             borderRadius: 3,
-            mx: "auto",
             display: "flex",
             flexDirection: "column",
-            overflow: "scroll",
-            overflowX: "hidden",
             overflowY: "auto",
             scrollBehavior: "smooth",
+            backgroundColor: "rgba(255,255,255,0.03)",
+            p: { xs: 1, sm: 2 },
+            mb: 2,
+            boxSizing: "border-box",
           }}
         >
           {chatMessages.length === 0 && (
             <Typography
               sx={{
+                width: "100%",
+                maxWidth: "100%",
+                boxSizing: "border-box",
                 backgroundColor: "white",
                 color: "black",
                 textTransform: "uppercase",
                 textAlign: "center",
-                padding: "10px 0",
+                padding: "12px",
+                borderRadius: 2,
                 cursor: "pointer",
-                fontSize: {
-                  xs: "15px",
-                  sm: "17px",
-                  md: "27px",
-                  lg: "30px",
-                },
+                fontSize: { xs: "14px", sm: "16px", md: "18px" },
+                overflowWrap: "break-word",
+                wordBreak: "break-word",
               }}
               onClick={startCoonversation}
             >
@@ -233,33 +252,36 @@ const Chat = () => {
           <div ref={lastMessageRef} />
         </Box>
 
-        <div
-          style={{
+        {/* Input Area */}
+        <Box
+          sx={{
             width: "100%",
-            borderRadius: 8,
+            borderRadius: 2,
             backgroundColor: "rgb(17,27,39)",
             display: "flex",
-            margin: "auto",
+            alignItems: "center",
+            px: 2,
+            py: 1,
+            boxSizing: "border-box",
           }}
         >
-          {" "}
           <input
             type="text"
+            placeholder="Type your message..."
             style={{
-              width: "100%",
+              flex: 1,
               backgroundColor: "transparent",
-              padding: "30px",
               border: "none",
               outline: "none",
               color: "white",
-              fontSize: "20px",
+              fontSize: "16px",
             }}
             ref={inputRef}
           />
-          <IconButton sx={{ color: "white", mx: 1 }}>
+          <IconButton sx={{ color: "white", ml: 1 }}>
             <IoMdSend />
           </IconButton>
-        </div>
+        </Box>
       </Box>
     </Box>
   );

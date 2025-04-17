@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Avatar, Typography } from "@mui/material";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { coldarkDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function extractCodeFromString(message: string) {
   if (message.includes("```")) {
@@ -11,7 +11,7 @@ function extractCodeFromString(message: string) {
 }
 
 function isCodeBlock(str: string) {
-  if (
+  return (
     str.includes("=") ||
     str.includes(";") ||
     str.includes("[") ||
@@ -19,83 +19,81 @@ function isCodeBlock(str: string) {
     str.includes("{") ||
     str.includes("}") ||
     str.includes("#") ||
-      str.includes("//") ||
-      str.includes("*") || 
-      str.includes("**") 
-  ) {
-    return true;
-  }
-  return false;
+    str.includes("//") ||
+    str.includes("*") ||
+    str.includes("**")
+  );
 }
+
 const ChatItem = ({
   content,
   role,
 }: {
   content: string;
   role: "user" | "model";
-    }) => {
-    
+}) => {
   const messageBlocks = extractCodeFromString(content);
 
-  return role === "model" ? (
+  return (
     <Box
       sx={{
         display: "flex",
         p: 2,
-        bgcolor: "#004d5612",
+        bgcolor: role === "model" ? "#004d5612" : "#004d56",
         gap: 2,
         borderRadius: 2,
         my: 1,
+        flexDirection: "row",
+        alignItems: "flex-start",
+        flexWrap: "wrap",
       }}
     >
-      <Avatar sx={{ ml: "0" }}>
-        <img src="openai.png" alt="openai" width={"30px"} />
+      <Avatar
+        sx={{ ml: 0, bgcolor: role === "user" ? "black" : "transparent" }}
+      >
+        {role === "model" ? (
+          <img src="openai.png" alt="openai" width={"30px"} />
+        ) : null}
       </Avatar>
-      <Box>
+
+      <Box sx={{ flex: 1, minWidth: 0 }}>
         {!messageBlocks && (
-          <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+          <Typography sx={{ fontSize: "18px" }}>{content}</Typography>
         )}
-        {messageBlocks &&
-          messageBlocks.length &&
-          messageBlocks.map((block) =>
-            isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
+
+        {messageBlocks?.map((block, index) =>
+          isCodeBlock(block) ? (
+            <Box
+              key={index}
+              sx={{
+                width: "100%",
+                overflowX: "auto",
+                borderRadius: 2,
+                backgroundColor: "#282c34",
+                mt: 2,
+              }}
+            >
+              <SyntaxHighlighter
+                language="javascript"
+                style={oneDark}
+                customStyle={{
+                  fontSize: "14px",
+                  margin: 0,
+                  padding: "16px",
+                  minWidth: "fit-content",
+                }}
+                wrapLines={true}
+                wrapLongLines={true}
+              >
                 {block}
               </SyntaxHighlighter>
-            ) : (
-              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
-            )
-          )}
-      </Box>
-    </Box>
-  ) : (
-    <Box
-      sx={{
-        display: "flex",
-        p: 2,
-        bgcolor: "#004d56",
-        gap: 2,
-        borderRadius: 2,
-      }}
-    >
-      <Avatar sx={{ ml: "0", bgcolor: "black", color: "white" }}>
-      
-      </Avatar>
-      <Box>
-        {!messageBlocks && (
-          <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+            </Box>
+          ) : (
+            <Typography key={index} sx={{ fontSize: "18px", my: 1 }}>
+              {block}
+            </Typography>
+          )
         )}
-        {messageBlocks &&
-          messageBlocks.length &&
-          messageBlocks.map((block) =>
-            isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
-                {block}
-              </SyntaxHighlighter>
-            ) : (
-              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
-            )
-          )}
       </Box>
     </Box>
   );
