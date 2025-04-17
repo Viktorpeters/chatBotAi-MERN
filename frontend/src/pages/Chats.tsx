@@ -223,7 +223,7 @@ const Chat = () => {
               Start a conversation
             </Typography>
           )}
-          {chatMessages.map((chat, index) => (
+          {chatHistory.map((chat, index) => (
             <ChatItem
               content={chat.parts[0].text}
               role={chat.role}
