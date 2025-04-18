@@ -6,8 +6,8 @@ export function validateTokenForRefresh(
   res: Response,
   next: NextFunction
 ) {
+  
   // get the token
-
   const token = req.headers["authorization"].split(" ")[1];
 
   try {
@@ -20,11 +20,11 @@ export function validateTokenForRefresh(
 
     const jwtInfo = validateJWt(token);
 
-    console.log(jwtInfo);
+   
 
     if (jwtInfo.isExpired) {
       (req as any).expired = true;
-      console.log("viktor here");
+    
       next();
 
       return;

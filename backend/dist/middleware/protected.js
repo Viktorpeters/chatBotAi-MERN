@@ -12,6 +12,12 @@ export const protectedRoute = (req, res, next) => {
         next();
     }
     catch (error) {
+        if (error.name === "TokenExpiredError") {
+            return res.status(403).json({
+                success: false,
+                message: "token expired",
+            });
+        }
         res.status(401).json({
             message: error.message,
         });

@@ -124,7 +124,7 @@ const Chat = () => {
         <Box
           sx={{
             width: "100%",
-            height: "100%",
+      
             bgcolor: "rgb(17,29,39)",
             borderRadius: 5,
             p: 2,

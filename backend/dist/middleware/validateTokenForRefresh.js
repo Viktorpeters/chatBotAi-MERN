@@ -10,10 +10,8 @@ export function validateTokenForRefresh(req, res, next) {
             });
         }
         const jwtInfo = validateJWt(token);
-        console.log(jwtInfo);
         if (jwtInfo.isExpired) {
             req.expired = true;
-            console.log("viktor here");
             next();
             return;
         }

@@ -134,7 +134,7 @@ export const refresh = (req, res, next) => {
         const decode = validateJWt(refreshToken);
         console.log(decode);
         if (decode.isExpired) {
-            return res.status(401).json({
+            return res.status(403).json({
                 success: false,
                 message: "re-authenticate again",
             });

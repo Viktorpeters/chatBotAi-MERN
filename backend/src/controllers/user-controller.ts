@@ -172,7 +172,7 @@ export const refresh = (req: Request, res: Response, next: NextFunction) => {
     console.log(decode);
 
     if (decode.isExpired) {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
         message: "re-authenticate again",
       });

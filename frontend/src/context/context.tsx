@@ -1,4 +1,15 @@
-import { createContext, useContext, useState, useLayoutEffect } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useLayoutEffect,
+  useEffect,
+} from "react";
+import AxiosPrivate from "../api/axiosPrivate";
+import toast from "react-hot-toast";
 
 type authType = {
   isLogged: boolean;
@@ -14,8 +25,28 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState("");
 
   useLayoutEffect(() => {
-    
-  }, [])
+    async function checkAuth() {
+      const raw = localStorage.getItem("state");
+
+      const state = raw ? JSON.parse(raw) : null;
+
+      if (!state) {
+        return;
+      }
+      try {
+        const response = await AxiosPrivate().get("/user/auth-status");
+        setToken(response.data.token.accessToken);
+      } catch (error: any) {
+        toast.error("No Authorization");
+      }
+    }
+
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    console.log(token);
+  }, [token]);
 
   return (
     <authContext.Provider
