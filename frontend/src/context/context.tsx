@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { createContext, useContext, useState, useEffect } from "react";
-import useAxiosPrivate from "../api/axiosPrivate.ts";
+import { authCheck } from "../api/authCheck";
 import toast from "react-hot-toast";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,6 @@ const authContext = createContext<authType | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
-  const AxiosPrivate = useAxiosPrivate();
   const [isLogged, setIsLogged] = useState(false);
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
@@ -36,16 +35,21 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      try {
-        const response = await AxiosPrivate.get("/user/auth-status");
+      const res = await authCheck();
 
-        const newToken = response.data.token.accessToken;
-        setToken(newToken);
+      if (res.success) {
+        setToken(res.token);
         setIsLogged(true);
-      } catch (err) {
-        console.error("Auth check failed");
-      } finally {
-        setLoading(false); // ✅ Done loading
+
+        navigate("/chats");
+
+        setLoading(false);
+        return;
+      } else {
+        // go to the login
+        navigate("/login");
+
+        setLoading(false);
       }
     };
 
