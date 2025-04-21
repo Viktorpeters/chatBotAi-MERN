@@ -88,7 +88,7 @@ export const getAllChatsOfUser = async (
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'viktor',
     });
   }
 };
@@ -118,3 +118,4 @@ export const clearConversation = async (req: Request, res: Response) => {
     });
   }
 };
+

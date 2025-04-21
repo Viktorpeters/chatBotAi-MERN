@@ -1,26 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect, useCallback, useState } from "react";
 import AxiosPrivate from "../api/axiosPrivate";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useAuth } from "../context/context"; // your auth context
 
 const useSignUpHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  async function signup(email: string, name: string, password: string) {
-    setIsLoading(true);
+  async function signup(email: string, name: string, passsword: string) {
     try {
-      const response = await AxiosPrivate().post("/user/signup", {
-        email,
-        password,
-        name,
-      });
+      const response = await AxiosPrivate().post("/user/signup");
 
-      setIsLoading(false);
-
-      return response.data;
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'an error occured');
-      setIsLoading(false);
+      return response.data?.data;
+    } catch (error) {
+      toast.error("cant sign up, try again");
     }
   }
 

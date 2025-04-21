@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { useEffect, useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import { useRef } from "react";
 import ChatItem from "../components/chared/ChatItem";
+import useGetMessagesHook from "../hooks/useGetMessages";
+import toast from "react-hot-toast";
 
 type chatType = {
   parts: [{ text: string }];
@@ -11,11 +14,13 @@ type chatType = {
 };
 
 const Chat = () => {
+  const { getAllMessages } = useGetMessagesHook();
+  const [isLoading, setIsLoading] = useState(true);
   const [chatMessages, setChatMessages] = useState<chatType[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
 
-  const chatHistory = [
+  const tempData = [
     {
       role: "user",
       parts: [
@@ -91,15 +96,27 @@ const Chat = () => {
   useEffect(() => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-      console.log("here");
     }
+
+    async function fetchAllMessage() {
+      try {
+        const data = await getAllMessages();
+
+        setChatMessages(data);
+        setIsLoading(false);
+      } catch (error) {
+        toast.error("cant load previous messages");
+      }
+    }
+
+    fetchAllMessage();
   }, []);
 
   useEffect(() => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chatHistory]);
+  }, [chatMessages]);
 
   return (
     <Box
@@ -124,7 +141,7 @@ const Chat = () => {
         <Box
           sx={{
             width: "100%",
-      
+
             bgcolor: "rgb(17,29,39)",
             borderRadius: 5,
             p: 2,
@@ -220,7 +237,7 @@ const Chat = () => {
             boxSizing: "border-box",
           }}
         >
-          {chatMessages.length === 0 && (
+          {chatMessages?.length === 0 && (
             <Typography
               sx={{
                 width: "100%",
@@ -242,7 +259,12 @@ const Chat = () => {
               Start a conversation
             </Typography>
           )}
-          {chatHistory.map((chat, index) => (
+          {isLoading && (
+            <p style={{ color: "whitesmoke", textAlign: "center" }}>
+              Loading Chats ...
+            </p>
+          )}
+          {chatMessages?.map((chat, index) => (
             <ChatItem
               content={chat.parts[0].text}
               role={chat.role}

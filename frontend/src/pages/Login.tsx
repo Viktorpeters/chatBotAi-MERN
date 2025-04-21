@@ -7,9 +7,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/context";
 
+
 const Login = () => {
   const navigate = useNavigate();
-  const { setIsLogged } = useAuth()!;
+  const { setIsLogged, setToken } = useAuth()!;
   const { login, isLoading } = useLogin();
   const [userDetails, setUserDetails] = useState({
     email: "",
@@ -39,7 +40,12 @@ const Login = () => {
         })
       );
 
+      // call the getAllMEssages Hook
+
+     
+
       setIsLogged(true);
+      setToken(data.token.accessToken);
       navigate("/chats");
       toast.success("user logged in succesfully");
       setUserDetails({

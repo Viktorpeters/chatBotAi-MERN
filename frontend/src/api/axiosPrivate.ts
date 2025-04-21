@@ -6,14 +6,14 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 import useRefresh from "../hooks/useRefreshToken";
-import { useAuth } from "../context/context";
+import { useAuth } from "../context/context"
 
 interface CustomizedAxiosRequestConfig extends AxiosRequestConfig {
   sent?: boolean;
 }
 
 const axiosPrivate: AxiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:2500/api/v1",
+  baseURL: "http://localhost:2500/api/v1",
   withCredentials: true,
 });
 

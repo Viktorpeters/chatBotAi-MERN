@@ -1,7 +1,6 @@
 import User from "../models/User.js";
 import { hash, compare } from "bcrypt";
 import { generateToken } from "../utils/token-manager.js";
-import { setCookie } from "../utils/set-cookie.js";
 import jwt from "jsonwebtoken";
 import { appCOnfigurations } from "../config/app.config.js";
 import { validateJWt } from "../utils/decodeJwt.js";
@@ -75,8 +74,15 @@ export const signIn = async (req, res) => {
                 const refreshToken = generateToken("REFRESH", {
                     userId: existingUser._id,
                 });
-                setCookie(res, refreshToken);
-                return res.status(200).json({
+                return res
+                    .status(200)
+                    .cookie("refresh_token", refreshToken, {
+                    httpOnly: true,
+                    secure: false,
+                    maxAge: +appCOnfigurations.COOKIE_EXP_TIME, //15minutes,
+                    sameSite: "lax",
+                })
+                    .json({
                     name: existingUser.name,
                     email: email,
                     token: {
@@ -89,14 +95,14 @@ export const signIn = async (req, res) => {
                 message: "Invalid credentials",
             });
         }
-        res.status(400).json({
-            suceess: false,
+        return res.status(400).json({
+            success: false,
             message: "validation error",
         });
     }
     catch (error) {
         res.status(500).json({
-            sucess: false,
+            success: false,
             message: error.message,
         });
     }

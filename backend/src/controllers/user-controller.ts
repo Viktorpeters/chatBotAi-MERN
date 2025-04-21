@@ -30,7 +30,7 @@ export const signUp = async (
   const { name, email, password } = req.body;
   // check if the user already exists
 
-  console.log(name, email, password)
+  console.log(name, email, password);
 
   try {
     const existingUser = await User.findOne({ email: email });
@@ -104,15 +104,21 @@ export const signIn = async (
           userId: existingUser._id as mongoose.Schema.Types.ObjectId,
         });
 
-        setCookie(res, refreshToken);
-
-        return res.status(200).json({
-          name: existingUser.name,
-          email: email,
-          token: {
-            accessToken,
-          },
-        });
+        return res
+          .status(200)
+          .cookie("refresh_token", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            maxAge: +appCOnfigurations.COOKIE_EXP_TIME, //15minutes,
+            sameSite: "lax",
+          })
+          .json({
+            name: existingUser.name,
+            email: email,
+            token: {
+              accessToken,
+            },
+          });
       }
 
       return res.status(401).json({
@@ -121,13 +127,13 @@ export const signIn = async (
       });
     }
 
-    res.status(400).json({
-      suceess: false,
+    return res.status(400).json({
+      success: false,
       message: "validation error",
     });
   } catch (error) {
     res.status(500).json({
-      sucess: false,
+      success: false,
       message: error.message,
     });
   }
@@ -191,7 +197,6 @@ export const refresh = (req: Request, res: Response, next: NextFunction) => {
       userId: decode.decodedInfo.userId,
     });
 
-
     res.status(201).json({
       suceess: true,
       token: {
@@ -211,7 +216,6 @@ export const authStatus = (req: Request, res: Response, next: NextFunction) => {
 
   const refreshToken = req.cookies.refresh_token;
 
-
   if (!refreshToken) {
     return res.status(401).json({
       success: false,
@@ -227,15 +231,11 @@ export const authStatus = (req: Request, res: Response, next: NextFunction) => {
       appCOnfigurations.JWT_SECRET
     ) as any;
 
-
-
     // get the userId from the sotred refreshToken ,and use it to generate another token
 
     const accessToken = generateToken("ACCESS", {
       userId: isValid.userId as mongoose.Schema.Types.ObjectId,
     });
-
-
 
     return res.status(200).json({
       success: true,

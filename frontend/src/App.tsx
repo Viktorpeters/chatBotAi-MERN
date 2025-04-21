@@ -5,16 +5,25 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Chat from "./pages/Chats";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+
+
   return (
     <>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* protected route */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/chats" element={<Chat />} />
+        </Route>
+
+
         <Route path="/login" element={<Home />} />
-        <Route path="/chats" element={<Chat />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
