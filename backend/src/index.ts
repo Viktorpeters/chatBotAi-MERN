@@ -40,3 +40,4 @@ connectToDatabase().then(() => {
       }
     });
 });
+

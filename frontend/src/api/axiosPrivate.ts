@@ -44,6 +44,7 @@ const useAxiosPrivate = (): AxiosInstance => {
 
         if (error?.response?.status === 403 && !prevRequest?.sent) {
           prevRequest.sent = true;
+          console.log("a token just expired");
 
           try {
             const newToken = await refreshToken();
@@ -54,6 +55,8 @@ const useAxiosPrivate = (): AxiosInstance => {
               ...prevRequest.headers,
               Authorization: `Bearer ${newToken}`,
             };
+
+            navigate("/chats");
 
             return axiosPrivate(prevRequest);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

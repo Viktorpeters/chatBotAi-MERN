@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import { red } from "@mui/material/colors";
@@ -100,7 +101,17 @@ const Chat = () => {
     }
   };
 
-  const onHandleSubmit = () => {};
+  const onHandleSubmit = async () => {
+    setIsTyping(true);
+    console.log(message);
+
+    // send the message
+
+    try {
+      const response = await sendMessage();
+      console.log(response);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     if (lastMessageRef.current) {
@@ -125,6 +136,8 @@ const Chat = () => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
+
+    setIsTyping(false);
   }, [chatMessages]);
 
   return (
@@ -300,7 +313,9 @@ const Chat = () => {
               <img src={img} alt="Ai image" width={"30px"} />
             </Avatar>
 
-            <Typography sx={{ fontSize: "18px" }}>Typing ...</Typography>
+            {isTyping && (
+              <Typography sx={{ fontSize: "18px" }}>Typing ...</Typography>
+            )}
           </Box>
           <div ref={lastMessageRef} />
         </Box>
