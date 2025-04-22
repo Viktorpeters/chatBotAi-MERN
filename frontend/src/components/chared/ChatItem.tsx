@@ -2,6 +2,8 @@ import React from "react";
 import { Box, Avatar, Typography } from "@mui/material";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import img from "../../assets/aipics.avif";
+import { useAuth } from "../../context/context";
 
 function extractCodeFromString(message: string) {
   if (message.includes("```")) {
@@ -32,6 +34,7 @@ const ChatItem = ({
   content: string;
   role: "user" | "model";
 }) => {
+  const { nameInitials } = useAuth()!;
   const messageBlocks = extractCodeFromString(content);
 
   return (
@@ -52,8 +55,10 @@ const ChatItem = ({
         sx={{ ml: 0, bgcolor: role === "user" ? "black" : "transparent" }}
       >
         {role === "model" ? (
-          <img src="openai.png" alt="openai" width={"30px"} />
-        ) : null}
+          <img src={img} alt="openai" width={"30px"} />
+        ) : (
+          nameInitials
+        )}
       </Avatar>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>

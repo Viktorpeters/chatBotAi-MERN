@@ -12,6 +12,8 @@ type authType = {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
+  nameInitials: string;
+  setNameInitials: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const authContext = createContext<authType | null>(null);
@@ -21,6 +23,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
+  const [nameInitials, setNameInitials] = useState("");
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -68,6 +71,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         token,
         setToken,
         loading,
+        nameInitials,
+        setNameInitials,
       }}
     >
       {children}

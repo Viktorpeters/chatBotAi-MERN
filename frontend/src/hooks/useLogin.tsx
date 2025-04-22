@@ -5,6 +5,7 @@ import { useState } from "react";
 const useLogin = () => {
   const AxiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(false);
+
   async function login(email: string, password: string) {
     setIsLoading(true);
 
@@ -15,7 +16,7 @@ const useLogin = () => {
       });
 
       setIsLoading(false);
-      console.log(response.data)
+      console.log(response.data);
 
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
