@@ -47,6 +47,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         navigate("/chats");
 
         setLoading(false);
+
+        // get the name innitials
+
+        const data = JSON.parse(localStorage.getItem("state"));
+        setNameInitials(`${data.name[0]}${data.name[1]}`);
         return;
       } else {
         // go to the login

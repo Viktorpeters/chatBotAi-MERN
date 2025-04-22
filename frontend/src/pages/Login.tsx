@@ -36,6 +36,7 @@ const Login = () => {
         "state",
         JSON.stringify({
           state: true,
+          name: data.name,
         })
       );
 

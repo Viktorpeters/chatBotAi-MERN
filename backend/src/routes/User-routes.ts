@@ -18,7 +18,7 @@ userRoutes.get("/", protectedRoute, getAllUsers);
 userRoutes.post("/signup", validateResource(signUpSchema), signUp);
 userRoutes.post("/signin", validateResource(signInSchema), signIn);
 userRoutes.get("/logout", signOut);
-userRoutes.get("/refresh", validateTokenForRefresh, refresh);
+userRoutes.get("/refresh",  refresh);
 
 // this route assumes you have no token but only the refresh token
 userRoutes.get("/auth-status", authStatus);

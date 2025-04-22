@@ -6,7 +6,10 @@ import { IoMdSend } from "react-icons/io";
 import { useRef } from "react";
 import ChatItem from "../components/chared/ChatItem";
 import useGetMessagesHook from "../hooks/useGetMessages";
+import useSendMessages from "../hooks/useSendMessages";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/context";
+import img from "../assets/aipics.avif";
 
 type chatType = {
   parts: [{ text: string }];
@@ -19,6 +22,10 @@ const Chat = () => {
   const [chatMessages, setChatMessages] = useState<chatType[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const { nameInitials } = useAuth()!;
+  const [isTyping, setIsTyping] = useState(false);
+  const [message, setMessage] = useState("");
+  const { sendMessage } = useSendMessages();
 
   const tempData = [
     {
@@ -92,6 +99,8 @@ const Chat = () => {
       inputRef?.current.focus();
     }
   };
+
+  const onHandleSubmit = () => {};
 
   useEffect(() => {
     if (lastMessageRef.current) {
@@ -271,6 +280,28 @@ const Chat = () => {
               key={index}
             />
           ))}
+
+          {/* user is typing */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              p: 2,
+              bgcolor: "#004d56",
+              gap: 2,
+              borderRadius: 2,
+              my: 1,
+              flexDirection: "row",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
+          >
+            <Avatar sx={{ ml: 0, bgcolor: "#000" }}>
+              <img src={img} alt="Ai image" width={"30px"} />
+            </Avatar>
+
+            <Typography sx={{ fontSize: "18px" }}>Typing ...</Typography>
+          </Box>
           <div ref={lastMessageRef} />
         </Box>
 
@@ -289,6 +320,7 @@ const Chat = () => {
         >
           <input
             type="text"
+            onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your message..."
             style={{
               flex: 1,
@@ -300,7 +332,7 @@ const Chat = () => {
             }}
             ref={inputRef}
           />
-          <IconButton sx={{ color: "white", ml: 1 }}>
+          <IconButton onClick={onHandleSubmit} sx={{ color: "white", ml: 1 }}>
             <IoMdSend />
           </IconButton>
         </Box>

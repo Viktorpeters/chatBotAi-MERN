@@ -5,8 +5,10 @@ import axios, {
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
 } from "axios";
-import useRefresh from "../hooks/useRefreshToken";
-import { useAuth } from "../context/context"
+import { useAuth } from "../context/context";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import refreshToken from "../api/refreshToken";
 
 interface CustomizedAxiosRequestConfig extends AxiosRequestConfig {
   sent?: boolean;
@@ -19,7 +21,7 @@ const axiosPrivate: AxiosInstance = axios.create({
 
 const useAxiosPrivate = (): AxiosInstance => {
   const { token } = useAuth()!;
-  const { refresh } = useRefresh();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // ✅ Add request interceptor
@@ -43,16 +45,30 @@ const useAxiosPrivate = (): AxiosInstance => {
         if (error?.response?.status === 403 && !prevRequest?.sent) {
           prevRequest.sent = true;
 
-          const newToken = await refresh();
+          try {
+            const newToken = await refreshToken();
 
-          console.log(newToken, "this is the new token at refresh");
+            console.log(newToken, "this is the new token at refresh");
 
-          prevRequest.headers = {
-            ...prevRequest.headers,
-            Authorization: `Bearer ${newToken}`,
-          };
+            prevRequest.headers = {
+              ...prevRequest.headers,
+              Authorization: `Bearer ${newToken}`,
+            };
 
-          return axiosPrivate(prevRequest);
+            return axiosPrivate(prevRequest);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (refreshError: any) {
+            // ✅ You can now catch and act on the reason
+            console.log(refreshError.message);
+
+            // optionally: logout user, redirect, toast, etc.
+            // e.g., logout(); navigate("/login");
+
+            toast.error("log in again");
+            navigate("/login");
+
+            return Promise.reject(refreshError);
+          }
         }
 
         return Promise.reject(error);
@@ -64,7 +80,7 @@ const useAxiosPrivate = (): AxiosInstance => {
       axiosPrivate.interceptors.request.eject(requestIntercept);
       axiosPrivate.interceptors.response.eject(responseIntercept);
     };
-  }, [token, refresh]);
+  }, [token, refreshToken]);
 
   return axiosPrivate;
 };
